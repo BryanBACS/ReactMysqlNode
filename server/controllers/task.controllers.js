@@ -5,8 +5,8 @@ import {pool} from '../db.js' //se llama a la base de datos
 //Función obtener todas las tareas. Aqui al usuario devuelve las tareas
 export const getTasks = async (req,res) =>{ //como responde se hace uso de request y response(req y res)
     try { //esto sirve para manejar los errores, asi en caso de que haya un error no se caiga todo el servicio, con try y catch
-        const [tareas] = await pool.query("SELECT * FROM task ORDER BY createAt ASC") //QUe devuelva todo dentro de la tabla task en orden ascendente de CreateAt(cuando se creo la tarea)
-        res.json(tareas) //que me devuelva un json con todo lo de dentro de la lista tareas
+        const [result] = await pool.query("SELECT * FROM task ORDER BY createAt ASC") //QUe devuelva todo dentro de la tabla task en orden ascendente de CreateAt(cuando se creo la tarea)
+        res.json(result) //que me devuelva un json con todo lo de dentro de la lista tareas
         //en este caso es solo tareas ya que devuelve un arreglo con todo y to quiero que muestre todoA
     } catch (error) { //por ende en caso de existir un error que lo capture y devuelva algo en concreto
         res.status(500).json({message: error.message})
@@ -33,7 +33,7 @@ export const getTask =  async (req,res) =>{ //como responde se hace uso de reque
 //Función para crear una tarea
 export const createTask = async (req,res) =>{ //como responde se hace uso de request y response(req y res)
     try { //esto sirve para manejar los errores, asi en caso de que haya un error no se caiga todo el servicio, con try y catch
-        console.log(req.body)
+        //console.log(req.body)
         const {title, description} = req.body; //Se guarda la información ingresada desde el body
         const [respuesta] = await pool.query( //la respuesta devuelta es una lista de valores por ello la respuesta se guarda como [] lista
             "INSERT INTO task(title,description) VALUES (?, ?)", //Con await al ser conexión a la base de datos
