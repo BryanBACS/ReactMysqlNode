@@ -5,6 +5,8 @@ import TaskForm from './Components/TaskForm'
 import NotFound from "./Components/NotFound";
 import Navbar from "./Components/Navbar";
 
+import { TaskContextProvider } from "./context/TaskProvider.jsx";//Aqui llamamos al context
+
 function App() {
   return (
     <div>
@@ -12,21 +14,24 @@ function App() {
         <Navbar/>
       </div>
 
-      <div>
-        <Routes> {/*Creo varias rutas */}
-          <Route path="/" element={<TaskPage />} /> {/*Primera ruta para visualizar tareas*/}
-          {/*Dice que si ingresa a la ruta "/" que muestre el elemento o componente:TaskPage */}
-        
-          {/*Segunda ruta para crear tareas*/}
-          <Route path="/new" element={<TaskForm/>} />
+      <div> 
+        <TaskContextProvider>{/**toda la aplicación va a estar dentro del context para que este todo conectado */}
+          <Routes> {/*Creo varias rutas */}
+            <Route path="/" element={<TaskPage />} /> {/*Primera ruta para visualizar tareas*/}
+            {/*Dice que si ingresa a la ruta "/" que muestre el elemento o componente:TaskPage */}
+          
+            {/*Segunda ruta para crear tareas*/}
+            <Route path="/new" element={<TaskForm/>} />
 
-          {/*ruta en caso de introducir una ruta no valida*/}
-          <Route path="*" element={<NotFound/>} /> {/*Para todas las páginas(*) que muestre NotFound*/}
-        </Routes>
+             {/*tercera ruta para editar tareas con una id dinamica y con el mismo formulario de creación*/}
+             <Route path="/edit/:id" element={<TaskForm/>} />
+
+            {/*ruta en caso de introducir una ruta no valida*/}
+            <Route path="*" element={<NotFound/>} /> {/*Para todas las páginas(*) que muestre NotFound*/}
+          </Routes>
+        </TaskContextProvider> 
       </div>
-      
     </div>
-    
   );
 }
 

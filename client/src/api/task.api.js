@@ -15,3 +15,22 @@ export const GetTasksRequest = async () =>{
     return await axios.get('http://localhost:4000/tasks') //aqui no se envia datos, sino traemos el arreglo de tareas
     //que al llamar haga la operación y la devuelva
 }
+
+//Petición delete al backend
+//Aqui recibo la id para borrar ese id
+export const DeleteTaskRequest  = async (id) =>{
+    return await axios.delete(`http://localhost:4000/tasks/${id}`);
+}
+
+
+//obtener una id en especifico
+export const getTaskRequest = async (id) =>{
+    return await axios.get(`http://localhost:4000/tasks/${id}`)
+}
+
+//Petición actualizar al backend
+//Aqui recibo la id para actualizar la información de ese id
+//de esta forma segun la id busca la tarea y le envia los nuevosCampos al backend
+export const UpdateTaskRequest = async (id, nuevosCampos) =>{
+    return await axios.put(`http://localhost:4000/tasks/${id}`, nuevosCampos)
+}

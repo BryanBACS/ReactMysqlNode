@@ -1,15 +1,53 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import {Form , Formik} from 'formik' //Form permite crear el formulario y Formik para ver el estado
-import {createTaskRequest} from '../api/task.api'
+import { useTask } from "../context/TaskProvider.jsx"
+import { useParams, useNavigate } from "react-router-dom"
+
 
 export default function TaskForm(){
+    const {createTask, getTask, updateTask} = useTask()
+    const parametroUrl = useParams()
+    console.log(parametroUrl)
+    const navigate = useNavigate()
+
+    const [task, setTask] = useState({
+        title :  "",
+        description: ""
+    }) //esto para llenar al momento de querer obtener una tarea en especifico
+
+    useEffect(() =>{ //de esta forma se valida inicialmente y esta función carga los datos para editar
+        const loadTask = async () =>{ //de esta forma se llama al async
+            if (parametroUrl.id){
+                console.log("cargando data")
+                //para ello se crea la función en API de editar y en taskProvider el traer la información
+                const response = await getTask(parametroUrl.id)
+                console.log("DATA", response)
+                setTask({
+                    title : response.title,
+                    description : response.description
+                });
+
+            }
+        };
+        loadTask(); //que ejecute el loadTask
+        
+    }, []); //agregar los [] al final o hace un llamado infinito
+
     return(
+
         <div>
+
+            <h1>
+                {/**en caso de tener una url con id que esta editando, de lo contraio si es /new sin id esta creando */}
+                {parametroUrl.id ? "editar tarea" : "Crear tarea" }
+            </h1>
+
             <Formik //*Manejar estados de variables para guardar */}
-                initialValues={{
-                    title:"", ///*De esta forma se definen variables donde guardan lo que se agrega en el form */}
-                    description:"", ////*De forma que luego pueden ser enviadas al backend */}
-                }} 
+                initialValues={task //ahora su estado son el useState de arriba, de esta forma sirve para en caso de editar o crear
+                    ///*De esta forma se definen variables donde guardan lo que se agrega en el form */}
+                     ////*De forma que luego pueden ser enviadas al backend */}
+                } 
+                enableReinitialize = {true}  //de esta forma se actualiza de los valores viejos que formik mantiene en memoria
                 //comprobar que este funcionando, se imprime los valores de los estados capturados hasta el momento lo escrito
                 onSubmit={async (values, actions)=>{ //se realiza una función que lo que haga es capturar los valores que se han agregado hasta el momento
                     //al ser llamado al backend se agrega el async con el await
@@ -18,17 +56,25 @@ export default function TaskForm(){
                     
                     //entonces al recibir los valores aqui ya enviado del formulario abajo y guardados en las varaibles,
                     //hago envio al backend esos valores mediante el await de la función de conexión api con axios
-                    try{ //al ser asincrono se maneja los errores mediante el try catch
-                        const response = await createTaskRequest(values); //recordar que los valores son las tareas(el title y el description)
-                        //esto devuelve una respuesta
-                        console.log(response);
-                        actions.resetForm() //esto permite resetear el boton al terminar de escribir con el actions
-                    }catch(error){
-                        //en caso de que ocurra un error que se muestre
-                        console.log(error)
-
+                    
+                    if (parametroUrl.id){
+                        console.log("update")
+                        await updateTask(parametroUrl.id, values) //se entrega la id y los nuevos valores creados
+                        /*setTask({ //de esta forma al crear o modificar se limpia
+                            title: values.title,
+                            description : values.description
+                        })*/
+                        navigate('/'); //lo envio a la ruta inicial despues de actualizar
+                    } else{
+                        await createTask(values)  //lo mismo que antes pero ahora con contexto
                     }
+                    setTask({ //de esta forma al crear o modificar se limpia
+                        title: "",
+                        description : ""
+                    })
 
+
+                    //actions.resetForm() //esto permite resetear el boton al terminar de escribir con el actions
                 }} //metodo para enviar el formulario
                 >
                 
